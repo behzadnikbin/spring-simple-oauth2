@@ -24,8 +24,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     ////////////    begin oauth2 configuration constants
     //              change the following constants according to your configs
-    private static final String CLIEN_ID = "search-engine-web-client";
-    private static final String CLIENT_SECRET = "search-engine-web-secret";
+    private static final String CLIEN_ID = "web-client";
+    private static final String CLIENT_SECRET = "web-secret";
     private static final String GRANT_TYPE_PASSWORD = "password";
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String REFRESH_TOKEN = "refresh_token";

@@ -54,6 +54,7 @@ public class InitializeData implements ApplicationListener<ContextRefreshedEvent
             //////          begin user
             admin = new User();
             admin.setUsername(User.ADMIN_USERNAME);
+            admin.setName("Admin User");
             admin.setPassword(passwordEncoder.encode(User.ADMIN_PASSWORD));
             admin.setEnabled(true);
             admin.setSystemUser(true);
