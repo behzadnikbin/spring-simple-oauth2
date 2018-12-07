@@ -19,6 +19,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         resources.resourceId(RESOURCE_ID).stateless(false);
     }
 
+    /*
+        Configure which URLs to authenticate or permit
+        /auth must be permitted in order to login
+        OPTIONS method is also permitted
+     */
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()

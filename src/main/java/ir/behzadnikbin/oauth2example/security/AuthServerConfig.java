@@ -13,23 +13,29 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
+/*
+    Oauth2 configuration
+ */
 @Configuration
 @EnableAuthorizationServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Import(SecurityConfig.class)
 public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    static final String CLIEN_ID = "search-engine-web-client";
-    static final String CLIENT_SECRET = "search-engine-web-secret";
-    static final String GRANT_TYPE_PASSWORD = "password";
-    static final String AUTHORIZATION_CODE = "authorization_code";
-    static final String REFRESH_TOKEN = "refresh_token";
-    static final String IMPLICIT = "implicit";
-    static final String SCOPE_READ = "read";
-    static final String SCOPE_WRITE = "write";
-    static final String TRUST = "trust";
-    static final int ACCESS_TOKEN_VALIDITY_SECONDS = 24 * 60 * 60 * 365;
-    static final int FREFRESH_TOKEN_VALIDITY_SECONDS = ACCESS_TOKEN_VALIDITY_SECONDS;
+    ////////////    begin oauth2 configuration constants
+    //              change the following constants according to your configs
+    private static final String CLIEN_ID = "search-engine-web-client";
+    private static final String CLIENT_SECRET = "search-engine-web-secret";
+    private static final String GRANT_TYPE_PASSWORD = "password";
+    private static final String AUTHORIZATION_CODE = "authorization_code";
+    private static final String REFRESH_TOKEN = "refresh_token";
+    private static final String IMPLICIT = "implicit";
+    private static final String SCOPE_READ = "read";
+    private static final String SCOPE_WRITE = "write";
+    private static final String TRUST = "trust";
+    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 24 * 60 * 60 * 365;
+    private static final int FREFRESH_TOKEN_VALIDITY_SECONDS = ACCESS_TOKEN_VALIDITY_SECONDS;
+    ////////////    end begin oauth2 configuration constants
 
     @Autowired
     private TokenStore tokenStore;
@@ -40,13 +46,16 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /*
+        Oauth2 configuration
+     */
     @Override
     public void configure(ClientDetailsServiceConfigurer configurer) throws Exception {
 
         configurer
-                .inMemory()
+                .inMemory()     //  sessions will be lost if you reset the server
                 .withClient(CLIEN_ID)
-                .secret(passwordEncoder.encode(CLIENT_SECRET))
+                .secret(passwordEncoder.encode(CLIENT_SECRET))      //  encoding password in database with client secret
                 .authorizedGrantTypes(GRANT_TYPE_PASSWORD, AUTHORIZATION_CODE, REFRESH_TOKEN, IMPLICIT )
                 .scopes(SCOPE_READ, SCOPE_WRITE, TRUST)
                 .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS).

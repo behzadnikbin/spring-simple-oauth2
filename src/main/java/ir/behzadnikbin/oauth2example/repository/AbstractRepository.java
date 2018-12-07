@@ -6,6 +6,11 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
 
+/*
+    An abstract repository as a parent of each repository
+    T: entity class
+    ID: class of id of entity class
+ */
 @NoRepositoryBean
 public interface AbstractRepository<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
     T findOneById(ID id);

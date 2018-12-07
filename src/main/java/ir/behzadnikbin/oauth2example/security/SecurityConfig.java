@@ -40,9 +40,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        //  Decrypt password of user
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
+    /*
+        Cors filter to allow request from other URLs
+     */
     @Bean
     public FilterRegistrationBean corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -57,6 +61,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return bean;
     }
 
+    /*
+        Cors config to allow request from other URLs
+     */
     @Bean
     public CorsConfiguration corsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -67,8 +74,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return configuration;
     }
 
-
-
+    /*
+        passwordEncoder bean used to encrypt user's password in database
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(4);

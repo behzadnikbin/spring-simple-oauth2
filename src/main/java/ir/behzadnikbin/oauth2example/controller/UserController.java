@@ -7,6 +7,7 @@ import ir.behzadnikbin.oauth2example.service.modelservices.UserService;
 import ir.behzadnikbin.oauth2example.service.serviceresult.ServiceResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class UserController implements CrudControllerInterface <User>  {
     private UserService userService;
 
     @RequestMapping("/list")
-    public ServiceResult list(@RequestBody UserPageRequestDto userPageReq) {
+    public ServiceResult<Page<User>> list(@RequestBody UserPageRequestDto userPageReq) {
         return userService.list(userPageReq);
     }
 
@@ -35,7 +36,7 @@ public class UserController implements CrudControllerInterface <User>  {
 
     @RequestMapping("/read")
     @Override
-    public ServiceResult read(@RequestBody User user) {
+    public ServiceResult<User> read(@RequestBody User user) {
         return userService.read(user);
     }
 

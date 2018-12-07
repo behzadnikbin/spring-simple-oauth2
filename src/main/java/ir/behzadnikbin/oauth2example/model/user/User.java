@@ -11,68 +11,34 @@ import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    User entity
+ */
 @Getter
 @Setter
 @Entity
 public class User extends AbstractModel {
 
-    @Override
-    public List<ValidationError> validate() {
-        List<ValidationError> errors = new ArrayList<>();
-        if (StringUtils.isEmpty(username)) {
-            errors.add(new ValidationError("username", "empty"));
-        }
-        if (StringUtils.isEmpty(password)) {
-            errors.add(new ValidationError("password", "empty"));
-        }
-        return errors;
-    }
-
-    public List<ValidationError> validateForUpdate() {
-        List<ValidationError> errors = new ArrayList<>();
-        if (StringUtils.isEmpty(username)) {
-            errors.add(new ValidationError("username", "empty"));
-        }
-        return errors;
-    }
-
-    public List<ValidationError> validateForChangePassword() {
-        List<ValidationError> errors = new ArrayList<>();
-        if (StringUtils.isEmpty(password)) {
-            errors.add(new ValidationError("password", "empty"));
-        }
-        return errors;
-    }
-
-    public List<ValidationError> validateForDelete() {
-        List<ValidationError> errors = new ArrayList<>();
-        if (systemUser == null || systemUser) {
-            errors.add(new ValidationError("", "system user cannot be deleted"));
-        }
-        return errors;
-    }
-
+    /*
+        Default username and password of admin user
+     */
     public static final String
             ADMIN_USERNAME = "admin",
             ADMIN_PASSWORD = "admin"
                     ;
 
-    @Column(unique = true)
-    private String username;
+    @Column(unique = true, nullable = false, updatable = false)
+    private String username;        //  username of user
 
-    @Column
-    private String name;
+    @Column(nullable = false)
+    private String name;            //  full name of user
 
-    @Column
-    private String password;
+    @Column(nullable = false)
+    private String password;        //  password of user. it must be encrypted or hashed before persisting
 
-    @Column
-    private Boolean enabled;
+    @Column(nullable = false)
+    private Boolean enabled;        //  if user is enabled, login will be possible
 
-    @Column
-    private Boolean systemUser = false;
-
-    public boolean isSystemUser() {
-        return systemUser != null && systemUser;
-    }
+    @Column(nullable = false, updatable = false)
+    private Boolean systemUser = false;     //  the default user (admin) cannot be deleted
 }

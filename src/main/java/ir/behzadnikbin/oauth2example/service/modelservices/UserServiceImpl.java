@@ -28,6 +28,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+
+/*
+    A service for user CRUD + list + changePassword
+    This service does not contain access control
+ */
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -41,9 +46,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    /*
+        List users page by page
+     */
     @Transactional(readOnly = true)
     @Override
-    public ServiceResult list(UserPageRequestDto pageRequestDto) {
+    public ServiceResult<Page<User>> list(UserPageRequestDto pageRequestDto) {
         Pageable pageable = PageRequest.of(
                 pageRequestDto.page,
                 pageRequestDto.pageSize,
@@ -66,10 +74,19 @@ public class UserServiceImpl implements UserService {
         return ServiceResultFactory.ok(users);
     }
 
+    /*
+        This service create a user. It checks uniqueness of username and encodes the password before persisting
+     */
     @Override
     public ServiceResult create(User user) {
 
-        List<ValidationError> errors = user.validate();
+        List<ValidationError> errors = new ArrayList<>();
+        if (StringUtils.isEmpty(user.getUsername())) {
+            errors.add(new ValidationError("username", "empty"));
+        }
+        if (StringUtils.isEmpty(user.getPassword())) {
+            errors.add(new ValidationError("password", "empty"));
+        }
         if (errors.size() > 0) {
             return ServiceResultFactory.validationError(errors);
         }
@@ -88,20 +105,32 @@ public class UserServiceImpl implements UserService {
         return ServiceResultFactory.ok();
     }
 
+    /*
+        This service fetches a user from database with the given id.
+     */
     @Transactional(readOnly = true)
     @Override
-    public ServiceResult read(User user) {
+    public ServiceResult<User> read(User user) {
         if (user == null || user.getId() == null) {
-            return ServiceResultFactory.validationError(Collections.singletonList(new ValidationError("id", "empty")));
+            return ServiceResultFactory.validationError(
+                    Collections.singletonList(new ValidationError("id", "empty"))
+            );
         }
         User dbUser = userRepository.findOneById(user.getId());
         dbUser.setPassword(null);
         return ServiceResultFactory.ok(dbUser);
     }
 
+    /*
+        This service updates a user. Username and password are not updatable. System user is not updatable either.
+        ChangePassword service can be used for updating password.
+     */
     @Override
     public ServiceResult update(User user) {
-        List<ValidationError> errors = user.validateForUpdate();
+        List<ValidationError> errors = new ArrayList<>();
+        if (StringUtils.isEmpty(user.getUsername())) {
+            errors.add(new ValidationError("username", "empty"));
+        }
         if (errors.size() > 0) {
             return ServiceResultFactory.validationError(errors);
         }
@@ -113,26 +142,24 @@ public class UserServiceImpl implements UserService {
             return ServiceResultFactory.validationError(errors);
         }
 
-
-        boolean isSystemUserInDb = dbUser.isSystemUser();
-
+        //  username and password nad systemUser cannot be updated.
         user.setPassword(null);
         user.setUsername(null);
         user.setSystemUser(null);
         modelMapper.map(user, dbUser);
 
-        if (isSystemUserInDb) {      //  system user cannot be disabled
-            dbUser.setEnabled(true);
-        }
-
         userRepository.save(dbUser);
         return ServiceResultFactory.ok();
     }
 
+    /*
+        This service deletes a user with the given id from database.
+     */
     @Override
     public ServiceResult delete(User user) {
-        List<ValidationError> errors = user.validateForDelete();
-        if (errors.size() > 0) {
+        List<ValidationError> errors = new ArrayList<>();
+        if (user == null || user.getId() == null) {
+            errors.add(new ValidationError("id", "empty"));
             return ServiceResultFactory.validationError(errors);
         }
         if (userRepository.deleteDistinctById(user.getId()) > 0) {
@@ -149,7 +176,7 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String sessionUsername = authentication.getName();
         User sessionDbUser = userRepository.findUserByUsername(sessionUsername);
-        boolean isSessionDbUserSystemUser = sessionDbUser.isSystemUser();
+        boolean isSessionDbUserSystemUser = sessionDbUser.getSystemUser();
         boolean differentUsername = !Objects.equals(sessionUsername, dbUser.getUsername());
         if (differentUsername) {
             if (!isSessionDbUserSystemUser) {

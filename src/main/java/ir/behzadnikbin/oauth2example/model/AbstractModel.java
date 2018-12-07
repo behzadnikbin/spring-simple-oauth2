@@ -14,10 +14,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-
+/*
+    An abstract class used as a parent of each entity of database
+ */
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id")       //  objects are equal when their ids are equal
 @MappedSuperclass
 public abstract class AbstractModel implements Serializable {
 
@@ -26,7 +28,4 @@ public abstract class AbstractModel implements Serializable {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private UUID id;        //  primary key
-
-    public abstract List<ValidationError> validate();
-
 }

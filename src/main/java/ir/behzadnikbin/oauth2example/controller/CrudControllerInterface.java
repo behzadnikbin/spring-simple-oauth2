@@ -6,7 +6,7 @@ public interface CrudControllerInterface <T> {
 
     ServiceResult create(T t);
 
-    ServiceResult read(T t);
+    ServiceResult<T> read(T t);
 
     ServiceResult update(T t);
 
